@@ -1,0 +1,72 @@
+.searchUserDiv{
+    margin-top: 1em;
+}
+.side_nav{
+
+    height:100vh;
+    padding: 2em;
+    background: #f5f5f5;
+}
+.side_nav button {
+    width: 100%;
+}
+
+.modal-body input, select {
+
+    border: none;
+    border-bottom:1px solid #900C3F;
+    color:#454745;
+    padding: 5px;
+    border-radius:0;
+
+}
+
+input:focus ,select:focus {
+       
+    outline: 0 !important;
+    box-shadow: 0 0 0 0 rgba(0, 0, 0, 0) !important;
+    border-bottom: 3px solid rgb(59, 28, 40); 
+
+}
+
+.modal-body button{
+    padding: 5px;
+    color: #fff;
+    width: 100px;
+    background-color: #900C3F;
+}
+
+
+/* AutoComplete */
+.ng-autocomplete {
+    width:100%;
+}
+
+
+.logoutButton{
+    font-size: 1em;
+    font-weight: 200;
+}
+
+
+@media only screen and (min-width : 320px) and (max-width : 768px) {
+
+    .side_nav{
+
+        min-height:20vh;
+        height:100%;
+
+    }
+
+}
+
+
+@media only screen and (min-width : 768px) and (max-width : 1024px)  {   
+
+    .side_nav{
+
+        padding:1em;
+
+    }
+
+}

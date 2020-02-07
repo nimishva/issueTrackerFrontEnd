@@ -1,0 +1,37 @@
+<!-- <ng-container *ngIf="dataLoaded == true">
+<m-table [value]=tableData *ngIf=tableData >
+    <m-column field="title" header="Title"></m-column>
+      <m-column field="status" header="Status"></m-column>
+      <m-column field="reporter" header="Reporter"></m-column>
+      <m-column field="date" header="Date"></m-column>
+</m-table>
+</ng-container> -->
+
+
+<m-table *ngIf="dataLoaded" [value]=tableData 
+[sortField]="'sl'" [sortOrder]="1" (onSort)="changeSort($event)"
+         (onRowClick)="rowClick($event)"
+         [selectable]="false" [selectionMode]="'multiple'" [selectionHandler]="false" (onRowSelect)="rowSelect($event)" (onRowUnselect)="rowUnselect($event)" (selectionChange)="onSelectionChange($event)" [(selection)]="selectedRows"
+         [expandable]="true" [expandMultiple]="true" (onRowExpand)="rowExpanded($event)" (onRowCollapse)="rowCollapse($event)"
+         (onEditComplete)="editComplete($event)" (onEditInit)="editInit($event)" (onEdit)="edit($event)" (onEditCancel)="editCancel($event)"
+          (onFilter)="onFilter($event)"
+         (onReload)="tableReload()" (onPage)="onPage($event)">
+         <m-header title="Issue Tracker"  [globalSearch]="true" [colSetting]="true" [reload]="true" [export]="true">
+          <!--<ng-template let-header>-->
+          <!--<div>-->
+          <!--<button>Hello</button>-->
+          <!--</div>-->
+          <!--</ng-template>-->
+        </m-header>
+
+  <m-column field="sl" [sortable]="true"  header="Sl."></m-column>
+  <m-column field="title" [sortable]="true"  header="Title"></m-column>
+  <m-column field="status" [sortable]="true" header="Status"></m-column>
+  <m-column field="reporter" [sortable]="true" header="Reporter"></m-column>
+  <m-column field="date" [sortable]="true" header="Date"></m-column>
+
+  <ng-template mTemplate="emptyTable">
+    {{emptyMsg}}
+  </ng-template>
+  <m-footer [paginator]="true"></m-footer>
+</m-table>

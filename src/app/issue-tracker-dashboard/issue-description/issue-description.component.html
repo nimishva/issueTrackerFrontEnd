@@ -1,0 +1,112 @@
+
+<div class="newEvent-form">
+      
+ <div class="closeBtn"><fa-icon [icon]="faClose" (click)="closeEntryWindow()"></fa-icon></div>
+
+    <form action="" #newEventForm="ngForm" (ngSubmit)="newIssueSubmitted()"  class="justify-content-center">
+        <div class="form-group">
+          <label for="title" class="labelInput">Title</label>
+            <input type="text" [(ngModel)]="issueTitle" name="title" #title="ngModel" (change)="updateIssueData($event.target.value,'title')" class="form-control" placeholder="Title" required>
+            <div *ngIf="title.invalid && (title.dirty || title.touched)" class="alert alert-danger text-left">
+                <div *ngIf="title.errors.required">
+                    title is required.
+                  </div>
+            </div>
+        </div> 
+
+       
+        <div class="form-group">
+          <label for="Description" class="labelInput">Description</label>
+          <ejs-richtexteditor id='defaultRTE' #fromRTE #desc='ngModel' required name="desc"
+          [(ngModel)]="value" (change)="updateIssueData($event,'description')" [placeholder]='descPlaceHolder'>
+            <ng-template #valueTemplate>
+            </ng-template>
+          </ejs-richtexteditor>
+        </div>
+
+        <div class="form-group">
+          <label for="status" class="labelInput">Status</label>
+         <select [(ngModel)]="status" name="status1" #status1="ngModel" class="form-control" (change)="updateIssueData($event.target.value,'status')">
+          <option *ngFor="let stat of statusArray" [value]="stat">{{stat}}</option>
+         </select>
+          <div *ngIf="title.invalid && (title.dirty || title.touched)" class="alert alert-danger text-left">
+              <div *ngIf="title.errors.required">
+                  Status is required.
+                </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+            <label for="assignee" class="labelInput">Choose assignee</label>
+            <div class="ng-autocomplete">
+              <ng-autocomplete #ngAutoCompleteStatic
+                               [data]="userArrayClone"
+                               name="name"
+                               (selected)="updateIssueData($event,'assignee')"
+                               [(ngModel)]="issueAssignee"
+                               [initialValue]="assigneeEdit"
+                               [placeHolder]="placeholder"
+                               [searchKeyword]="keyword"
+                              [itemTemplate]="itemTemplateStatic"
+                              >
+              </ng-autocomplete>
+              <!-- [notFoundTemplate]="notFoundTemplate" 
+               notFoundText="Not found"
+              -->
+              <ng-template #itemTemplateStatic let-item>
+                <a [innerHTML]="item"></a>
+              </ng-template>
+            </div>
+        </div>
+
+       <div class="form-group">
+        <label for="date" class="labelInput">Reported Date</label>
+        <input type="text" class="form-control" [(ngModel)]="reportedDate" name="date" #date="ngModel" placeholder="Date" required>
+        <div *ngIf="date.invalid && (date.dirty || date.touched)" class="alert alert-danger text-left">
+            <div *ngIf="date.errors.required">
+                Date is required.
+              </div>
+        </div>
+    </div>
+
+
+    <ng-template [ngIf]="viewMode === 'edit'">
+      <h5 class="labelInput">Comments</h5>
+      <ng-container *ngFor="let comment of comments">
+        <div class="row commentWrapper">
+          <div class="col-sm-12 commentBody">{{comment.comment}}</div>
+          <div class="col-sm-12 commentDetails">Commented by : {{getUsername(comment.commentBy)}}</div>
+          <div class="col-sm-6 commentDetails">Date : {{comment.date | date:'medium' }}</div>
+          <div class="col-sm-6 text-right" *ngIf="comment.commentBy == loggedUserData.userId"><a href="#" class="deleteCommment" (click)="deleteComment($event,comment.id)"><fa-icon class="iconStyle" [icon]="faTrash"></fa-icon></a></div>
+        </div>
+        <!-- <div class="commentWrapper">
+        <div class="commentBody"></div>
+        <div class="commentDetails"><span></span><span></span></div>
+      </div> -->
+      </ng-container>
+     
+      <div class="form-group">
+        <label for="comment" class="labelInput">add comment</label>
+        <textarea class="form-control" [(ngModel)]="commentInput" name="comment" #comment="ngModel" (change)="updateIssueData($event.target.value,'comments')" placeholder="Comments"></textarea>
+    </div>
+    </ng-template>
+
+    <ng-template [ngIf]="viewMode === 'edit'">
+      <h5 class="labelInput">Watchers List</h5>
+      <ng-container *ngFor="let user of watcher">
+        <div class="row commentWrapper">
+          <div class="col-sm-12 commentDetails">{{user}}</div>
+          <!-- <div class="col-sm-6 text-right" *ngIf="comment.commentBy == loggedUserData.userId"><a href="#" class="deleteCommment" (click)="deleteComment($event,comment.id)"><fa-icon class="iconStyle" [icon]="faTrash"></fa-icon></a></div> -->
+        </div>
+        <!-- <div class="commentWrapper">
+        <div class="commentBody"></div>
+        <div class="commentDetails"><span></span><span></span></div>
+      </div> -->
+      </ng-container>
+      <button type="button" (click)="updateIssueData('watcher','watcher')"  class="btn mt-2 ml-4">Watch</button>
+    </ng-template>
+
+        <ng-container *ngIf="viewMode != 'edit'"> <button type="submit" [disabled]="!newEventForm.form.valid" [ngClass]="{hideButton:hideSubmitButton}" class="btn mt-2 ">{{eventFormButtonName}}</button></ng-container>
+        <ng-container *ngIf="viewMode === 'edit'"></ng-container>
+    </form>
+</div>

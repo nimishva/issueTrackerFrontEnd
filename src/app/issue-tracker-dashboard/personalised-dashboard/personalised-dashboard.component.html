@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0 user-scalable=no">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Personalized Dashboard</title>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <a class="navbar-brand" href="#">Issue Tracker</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+<!-- Navigation bar -->
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <div class="ml-auto p-2">
+          <div class="textStyle">Welcome <b>{{loggedUser}}</b></div>
+          <div class="textStyle"><a href="#" (click)="logout()">Logout</a></div>
+    
+    
+        </div>
+  
+  </div>
+</nav>
+<!-- Navigation bar ends -->
+<!-- Calendar section  starts -->
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-md-2 side_nav">  
+      <button type="button" class="btn btn-primary btn-sm" (click)="openEntryWindow()"> Create New</button> 
+
+      <div class="searchUserDiv">
+          <form action="" #searchUserForm="ngForm" class="justify-content-center">
+          <div class="form-group">
+              <div class="ng-autocomplete">
+                <ng-autocomplete #ngAutoCompleteStatic
+                                 [data]="issueArrayClone"
+                                 name="name"
+                                 (selected)="fetchIssueData($event)"
+                                 (inputCleared) = "getAllData()"
+                                 [(ngModel)]="searchUsers"
+                                 [initialValue]=""
+                                 [placeHolder]="searchUserPlaceholder"
+                                 [searchKeyword]="keyword"
+                                [itemTemplate]="itemTemplateStatic"
+                                 #clearInput
+                                 >
+                </ng-autocomplete>
+                <ng-template #itemTemplateStatic let-item>
+                  <a [innerHTML]="item"></a>
+                </ng-template>
+
+              </div>
+
+          </div>
+          </form>
+          <div class="userEvents"> 
+              <span *ngFor="let events of userWiseloadedEvents">
+                 <div class="eventTitle" (click)="showUserwiseEvents(events.id)"><fa-icon class="iconStyle" [icon]="faCaretRight"></fa-icon> {{events.title}}</div>  
+                <div class="eventDateSmall">{{events.start | date:'medium'}}</div>
+              </span>
+             </div>
+      </div>  
+      
+      <!-- Search user parent Div ends-->
+    </div>
+    <div class="col-md-10 p-2 calendar_col">
+        <app-personalized-view *ngIf="viewMode=='dashBoard'" [newIssueData]="newIssueData" [allUsers]="allUsers" (emitIssueId)="loadissueData($event)"></app-personalized-view>
+        <app-issue-description *ngIf="viewMode=='entry'"  [newIssueData]="newIssueData" [allUsers]="allUsers" [emittedIssueId]="emittedIssueId" (closeWindow)="closeEntryWindow()"></app-issue-description>
+    </div>
+
+  </div> <!-- row-->
+  <!-- Calendar ends -->
+</div> <!-- Container -->
+<!-- Calendar section  starts -->
+
+<!-- Modal -->
+<ng-template #newEventModal let-close="close">
+  <div class="modal-header">
+    <h5 class="modal-title">Title</h5>
+    <button type="button" class="close" (click)="closeNewEventModal()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+      "Test"
+  </div>
+
+</ng-template>
+<!-- Modal ends -->
+  <!-- <ngx-ui-loader></ngx-ui-loader> -->
+  
+</body>
+</html>

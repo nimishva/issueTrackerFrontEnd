@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Login</title>
+</head>
+<body>
+    <section id="cover">
+        <div id="cover-caption">
+            <div class="container">
+                <div class="row text-white">
+                    <div class="col-sm-6 offset-sm-3 text-center">
+                        <h1 class="display-4 mt-4">Login</h1>
+                        <div class="login-form">
+                                <div class="form-group">
+                                    <label class="sr-only">username</label>
+                                    <input type="text" id="user" class="form-control" [(ngModel)]="username" placeholder="username" autofocus>
+                                    <div [ngClass]="{'validation-user': triggerErrorUser == true}">Enter username</div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="sr-only">Password</label>
+                                    <input type="password" class="form-control" [(ngModel)]="password" placeholder="password">
+                                    <div [ngClass]="{'validation-pass': triggerErrorPass == true}">Enter Password</div>
+                                </div>
+
+                                <button type="button" (click)="logInFunction()" class="btn mt-2">Submit</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-center mt-2">
+                    create an account? <a href="/signup">Sign up</a>
+
+                </div>
+
+            </div> <!-- Container -->
+         
+        </div>
+    </section>
+</body>
+</html>
