@@ -52,25 +52,26 @@ export class PersonalizedViewComponent implements OnInit {
     this.http.getAllIssueData()
     .subscribe((apiResponse)=>{
      // console.log(apiResponse);
-     console.log("Loading");
+     // console.log("Loading");
       apiResponse.data.forEach(data => {
         
         let user = this.http.getNameOfUser(this.allUsers,data.reportedBy);
-        console.log(data.issueId);
+        let reportDt = new Date(data.reportedDate);
+        let dt = reportDt.getFullYear() + "-" + (reportDt.getMonth() + 1) + "-" + reportDt.getDate() + " " + reportDt.getHours() + ":" + reportDt.getMinutes(); 
         this.tableData.push(
-          
+           
           {
             'id'        : data.issueId,
             'sl'        : i,
             'title'     : data.title,
             'status'    : data.status,
             'reporter'  : user,
-            'date'      : data.reportedDate
+            'date'      : dt //data.reportedDate
           }
         )
         i++;
       });
-      console.log(this.tableData);
+      //console.log(this.tableData);
     })
 
     

@@ -5,6 +5,9 @@ import { MainService } from '../../main.service';
 
 import {faTrash,faWindowClose} from '@fortawesome/free-solid-svg-icons';
 
+import { NgxUiLoaderService } from 'ngx-ui-loader'
+import { NgForm } from '@angular/forms';
+
 @Component({
   selector: 'app-issue-description',
   templateUrl: './issue-description.component.html',
@@ -14,6 +17,7 @@ import {faTrash,faWindowClose} from '@fortawesome/free-solid-svg-icons';
 export class IssueDescriptionComponent implements OnInit {
 
   @ViewChild('fromRTE',{static:true}) rteObj:RichTextEditorComponent;
+  @ViewChild('newIssueForm',{static:true}) public issueForm:NgForm;
   public value:any = null;
   @Input() allUsers:any[];
   @Input() emittedIssueId:any;
@@ -27,19 +31,19 @@ export class IssueDescriptionComponent implements OnInit {
   watcher  :any[] = []; 
   eventFormButtonName:string = "Save";
   descPlaceHolder:string="Description";
-  statusArray:any[] = ['in- progress', 'in-test', 'done','backlog'];
+  statusArray:any[] = ['in-progress', 'in-test', 'done','backlog'];
   //AutoCOmplete 
   placeholder:string = "Choose Assignee";
 
-  loggedUserData:any;
+  public loggedUserData:any = "";
 
   faTrash = faTrash;
   faClose = faWindowClose;
 
   //AutoComplete input
   public name:string;
-  public userArray      :any    = [];
-  public userArrayClone :any    = [];
+  public userArray:any[];
+  public userArrayClone:any[] = [];
   public placeholderAssignee    = 'Choose assignee';
   public issueAssignee:string;
   public assigneeEdit:string="";
@@ -47,17 +51,19 @@ export class IssueDescriptionComponent implements OnInit {
   //
   viewMode:string = "input";
 
-  constructor(private http:MainService,private itSocket:ItSocketService) { }
+  constructor(private http:MainService,private itSocket:ItSocketService,private loader:NgxUiLoaderService) { }
 
   ngOnInit() {
     this.loggedUserData = this.http.getUserInfoFromLocalStorage();
-    //console.log(this.loggedUserData);
-    this.getAllUserData();
+    
     this.rteObj.insertImageSettings.saveFormat = "Base64";
-    if(this.emittedIssueId != ""){
+    if(this.emittedIssueId != "New"){
       this.viewMode = "edit";
     }
-   console.log(this.viewMode);
+    console.log(this.emittedIssueId)
+   setTimeout(() => {
+    this.getAllUserData();
+   }, 600);
   }//ngOnInit
 
   ngAfterViewInit(): void {
@@ -69,12 +75,20 @@ export class IssueDescriptionComponent implements OnInit {
   }//ngAfterViewInit
 
   ngOnChanges(change:SimpleChanges):void{
-
     if(change.newIssueData){
+      console.log("Data changed");
       this.loadIssueDescription();
-    }else if(change.emittedIssueId){
-      this.loadIssueDescription();
+    }else if(change.emittedIssueId.currentValue == "New"){
+      this.issueForm.reset();
+      this.comments       = [];
+      this.watcher        = [];
+      this.reportedDate   = new Date();  
+      this.viewMode = "input"
+    }else{
+      this.loadIssueDescription(change.emittedIssueId.currentValue);
+      
     }
+
   }
 
   updateStatus(e:any){
@@ -82,13 +96,21 @@ export class IssueDescriptionComponent implements OnInit {
   }
 
   getAllUserData(){
+    this.userArray = [];
+    this.userArrayClone = [];
+    let username = this.loggedUserData.username;
     this.http.getUserData()
     .subscribe((users)=>{
       users.data.forEach(user => {
+       if(user.username != this.loggedUserData.username){
         this.userArray.push(user.username);
+       }
       });
     });
-    this.userArrayClone = this.userArray;
+    
+    //this.userArrayClone = this.userArrayClone.filter(user=>user != this.loggedUserData.username)
+   // console.log(this.userArray.length);
+
   } //getAllUserData ends here 
 
 
@@ -97,7 +119,7 @@ export class IssueDescriptionComponent implements OnInit {
   }
 
   newIssueSubmitted(){
-
+    this.loader.start();
     let submittedIssue =  {
       //eventId:'',
       title: this.issueTitle,
@@ -109,10 +131,15 @@ export class IssueDescriptionComponent implements OnInit {
     };
     //console.log(this.rteObj.imageUploadSuccess)
     this.itSocket.createNewIssueTracker(submittedIssue);
+    this.resetForm(); //Resetting form
+    this.loader.stop();
   } //newIssueSubmitted Ends here ..
 
 
-  loadIssueDescription(){
+  loadIssueDescription(mode?){
+    this.loader.start();
+  
+      //console.log(this.viewMode);
     this.http.getIssueData({issueId:this.emittedIssueId})
     .subscribe((apiResponse)=>{
 
@@ -126,13 +153,17 @@ export class IssueDescriptionComponent implements OnInit {
       this.issueAssignee  = this.http.getNameOfUser(this.allUsers,apiResponse.data[0].assignee);
   
     })
+    
 
+   
+  this.loader.stop();
    // console.log(this.issueAssignee);
   } //Load Issue Description data
 
   updateIssueData(e:any,updatedDataType){
-    //console.log(e);
+    
     if((this.viewMode == "edit") && (e != "")){
+      this.loader.start();
     let submittedIssue =  {
       //eventId:'',
       issueId:this.emittedIssueId,
@@ -152,8 +183,10 @@ export class IssueDescriptionComponent implements OnInit {
     this.itSocket.udateIssueDescription(submittedIssue);
     setTimeout(() => {
       this.loadIssueDescription();
+    
     }, 1000);
   } //Update Issue Data
+  this.loader.stop();
 } //UpdateIssueData ends here
 
 deleteComment(e,dt){
@@ -161,23 +194,26 @@ deleteComment(e,dt){
   this.itSocket.deleteComment(dt,this.emittedIssueId);
   setTimeout(() => {
     this.loadIssueDescription();
+    
   }, 1000);
  
 } //Delete Comment Ends here
 
 closeEntryWindow(){
- 
-      this.issueTitle     = "";
-      this.value          = "";
-      this.status         = "";
+  this.loader.start();
+      this.issueForm.reset();
       this.comments       = [];
       this.watcher        = [];
       this.reportedDate   = new Date();  
-      this.issueAssignee  = "";
       setTimeout(() => {
         this.closeWindow.emit();
+        this.loader.stop();
       }, 1000);
 }
 
+resetForm(){
+  this.issueForm.reset();
+  this.reportedDate   = new Date(); 
+}
 
 } //Main Class ends here

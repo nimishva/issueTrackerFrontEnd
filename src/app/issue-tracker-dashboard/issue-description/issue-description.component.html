@@ -3,7 +3,7 @@
       
  <div class="closeBtn"><fa-icon [icon]="faClose" (click)="closeEntryWindow()"></fa-icon></div>
 
-    <form action="" #newEventForm="ngForm" (ngSubmit)="newIssueSubmitted()"  class="justify-content-center">
+    <form action="" #newIssueForm="ngForm" (ngSubmit)="newIssueSubmitted()"  class="justify-content-center">
         <div class="form-group">
           <label for="title" class="labelInput">Title</label>
             <input type="text" [(ngModel)]="issueTitle" name="title" #title="ngModel" (change)="updateIssueData($event.target.value,'title')" class="form-control" placeholder="Title" required>
@@ -26,7 +26,7 @@
 
         <div class="form-group">
           <label for="status" class="labelInput">Status</label>
-         <select [(ngModel)]="status" name="status1" #status1="ngModel" class="form-control" (change)="updateIssueData($event.target.value,'status')">
+         <select [(ngModel)]="status" name="status1" [value]="in-progress" #status1="ngModel" class="form-control" (change)="updateIssueData($event.target.value,'status')">
           <option *ngFor="let stat of statusArray" [value]="stat">{{stat}}</option>
          </select>
           <div *ngIf="title.invalid && (title.dirty || title.touched)" class="alert alert-danger text-left">
@@ -40,7 +40,7 @@
             <label for="assignee" class="labelInput">Choose assignee</label>
             <div class="ng-autocomplete">
               <ng-autocomplete #ngAutoCompleteStatic
-                               [data]="userArrayClone"
+                               [data]="userArray"
                                name="name"
                                (selected)="updateIssueData($event,'assignee')"
                                [(ngModel)]="issueAssignee"
@@ -91,11 +91,11 @@
     </div>
     </ng-template>
 
-    <ng-template [ngIf]="viewMode === 'edit'">
+    <ng-template [ngIf]="viewMode == 'edit'">
       <h5 class="labelInput">Watchers List</h5>
       <ng-container *ngFor="let user of watcher">
         <div class="row commentWrapper">
-          <div class="col-sm-12 commentDetails">{{user}}</div>
+          <div class="col-sm-12 commentDetails">{{getUsername(user)}}</div>
           <!-- <div class="col-sm-6 text-right" *ngIf="comment.commentBy == loggedUserData.userId"><a href="#" class="deleteCommment" (click)="deleteComment($event,comment.id)"><fa-icon class="iconStyle" [icon]="faTrash"></fa-icon></a></div> -->
         </div>
         <!-- <div class="commentWrapper">
@@ -103,10 +103,12 @@
         <div class="commentDetails"><span></span><span></span></div>
       </div> -->
       </ng-container>
-      <button type="button" (click)="updateIssueData('watcher','watcher')"  class="btn mt-2 ml-4">Watch</button>
+      <button type="button" *ngIf="viewMode == 'edit'" (click)="updateIssueData('watcher','watcher')"  class="btn mt-2 ml-4">Watch</button>
     </ng-template>
 
-        <ng-container *ngIf="viewMode != 'edit'"> <button type="submit" [disabled]="!newEventForm.form.valid" [ngClass]="{hideButton:hideSubmitButton}" class="btn mt-2 ">{{eventFormButtonName}}</button></ng-container>
-        <ng-container *ngIf="viewMode === 'edit'"></ng-container>
+        <ng-container *ngIf="viewMode == 'input'"> 
+          <button type="submit" [disabled]="!newIssueForm.form.valid" [ngClass]="{hideButton:hideSubmitButton}" class="btn mt-2 ">Save</button>
+          <button type="button"  (click)="resetForm()" [ngClass]="{hideButton:hideSubmitButton}" class="btn mt-2 ">Reset</button>
+        </ng-container>
     </form>
 </div>

@@ -9,7 +9,8 @@ import { ToastrService } from 'ngx-toastr';
 //Services
 import { ItSocketService} from '../../it-socket.service';
 
-import { pipe } from 'rxjs';
+//Loader
+import { NgxUiLoaderService } from 'ngx-ui-loader';
 
 @Component({
   selector: 'app-personalised-dashboard',
@@ -34,13 +35,18 @@ export class PersonalisedDashboardComponent implements OnInit {
    public name:string;
    public searchUsers:any = "";
    public keyword = "title"
-   public searchUserPlaceholder:string = "Search User";
+   public searchUserPlaceholder:string = "Search";
    public userWiseloadedEvents:any =[];
 
-  constructor( private http:MainService,private socketService:ItSocketService,private toaster:ToastrService,private router:Router ) { }
+   //Loader
+   public loading = false;
+
+  constructor( private loader:NgxUiLoaderService, private http:MainService,private socketService:ItSocketService,private toaster:ToastrService,private router:Router ) { }
 
   ngOnInit() {
 
+     this.verifyUser()
+     this.tokenValidityCheck();
      this.loggedUserData = this.http.getUserInfoFromLocalStorage();
      this.loggedUser = this.loggedUserData.firstName;
      this.setUserOnline();
@@ -48,20 +54,45 @@ export class PersonalisedDashboardComponent implements OnInit {
      this.listenToOwnUserId();
      this.getAllData();
      this.getAllIssueData();
-
+     
+     
   
   }//ngOnint ends here..
 
+  verifyUser(){
+    if(Cookie.get('authtoken')=== "" || Cookie.get('authtoken')=== undefined || Cookie.get('authtoken')=== null )
+    {
+      this.router.navigate(['/login']);
+      return false;
+    }else{
+      this.router.navigate(['/dashBoard']);
+    }
+  }
+
   setUserOnline(){
     let authToken = Cookie.get('authtoken');
-    console.log(authToken);
+    //console.log(authToken);
     this.socketService.setUserOnline(authToken);
   } //Setting user online
 
+  tokenValidityCheck(){
+    this.socketService.tokenValidity()
+    .subscribe((data)=>{
+      if(data.status === 403){
+        this.toaster.error(data.message);
+        setTimeout(() => {
+          this.router.navigate(['/login']);
+        }, 1000);
+        
+      }
+    })
+  }
+
   listenToOwnUserId(){
+
     this.socketService.getOwnUserId(this.loggedUserData.userId)
     .subscribe((response)=>{
-      console.log(response.data.updatedDataType);
+      //console.log(response.data.updatedDataType);
       this.getAllData();
       this.showToaster(response.data.issueId,response); 
       this.getAllIssueData();
@@ -84,7 +115,8 @@ export class PersonalisedDashboardComponent implements OnInit {
   }
 
   getAllData(e?){
-
+    this.loader.start();
+    this.loading = true;
     let tableArray = [];
     let i = 1;
     this.http.getAllIssueData()
@@ -92,8 +124,8 @@ export class PersonalisedDashboardComponent implements OnInit {
       for(let data of apiResponse.data){
     // apiResponse.data.forEach(data => {
       let user = this.http.getNameOfUser(this.allUsers,data.reportedBy);
-          
-          // console.log(data.issueId);
+      let reportDt = new Date(data.reportedDate);
+      let dat = reportDt.getFullYear() + "-" + (reportDt.getMonth() + 1) + "-" + reportDt.getDate() + " " + reportDt.getHours() + ":" + reportDt.getMinutes();
            tableArray.push(
              
              {
@@ -102,7 +134,7 @@ export class PersonalisedDashboardComponent implements OnInit {
                'title'     : data.title,
                'status'    : data.status,
                'reporter'  : user,
-               'date'      : data.reportedDate
+               'date'      : dat//data.reportedDate
              }
            )
           
@@ -112,9 +144,10 @@ export class PersonalisedDashboardComponent implements OnInit {
       }
     // });
     this.newIssueData = tableArray;
+
   })
 
-  console.log(this.newIssueData);
+  this.loader.stop();
 } //End of get All Data
 
   getUserData(){
@@ -127,6 +160,7 @@ export class PersonalisedDashboardComponent implements OnInit {
   } //GetUserData
 
   getAllIssueData(){
+    this.issueArrayClone = []
     this.http.getAllIssueData()
     .subscribe((apiResponse)=>{
       apiResponse.data.forEach(data => {
@@ -143,6 +177,9 @@ export class PersonalisedDashboardComponent implements OnInit {
     .subscribe((apiResponse)=>{
       for(let data of apiResponse.data){
         let user = this.http.getNameOfUser(this.allUsers,data.reportedBy);
+        let reportDt = new Date(data.reportedDate);
+        let dat = reportDt.getFullYear() + "-" + (reportDt.getMonth() + 1) + "-" + reportDt.getDate() + " " + reportDt.getHours() + ":" + reportDt.getMinutes();
+        console.log(dat);
         if(data.title == e){
           dt.push( {
             'id'        : data.issueId,
@@ -150,14 +187,16 @@ export class PersonalisedDashboardComponent implements OnInit {
             'title'     : data.title,
             'status'    : data.status,
             'reporter'  : user,
-            'date'      : data.reportedDate
+            'date'      : dat//data.reportedDate
           });
         }
         i++
       };
       this.newIssueData = dt;
     })
-    console.log(this.newIssueData)
+    if(this.viewMode != "dashBoard"){
+      this.viewMode = "dashBoard";
+    }
   }
 
   loadissueData(e){
@@ -166,11 +205,16 @@ export class PersonalisedDashboardComponent implements OnInit {
   }
 
   closeEntryWindow(){
+    this.loader.start();
     this.viewMode = "dashBoard";
+    setTimeout(() => {
+      this.loader.stop();
+    }, 1000);
+    
   }
 
   openEntryWindow(){
-    this.emittedIssueId = "";
+    this.emittedIssueId = "New";
     this.viewMode = "entry";
   }
 

@@ -6,7 +6,8 @@ import { HttpClient,HttpErrorResponse } from '@angular/common/http';
 })
 export class MainService {
 
-  private apiUrl = "http://localhost:3000/api/v1/"
+  //private apiUrl = "http://localhost:3000/api/v1/"
+  private apiUrl = "http://api.resfeber.online/api/v1/"
   constructor(private http:HttpClient) {
 
 

@@ -11,21 +11,23 @@ import { PersonalizedViewComponent } from './personalized-view/personalized-view
 import { RichTextEditorAllModule } from '@syncfusion/ej2-angular-richtexteditor';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { MomentumTableModule } from 'momentum-table';
-
+import { NgxUiLoaderModule } from 'ngx-ui-loader'
 
 
 @NgModule({
-  declarations: [PersonalizedViewComponent],
+  declarations: [
+    PersonalizedViewComponent,
+    IssueDescriptionComponent,
+    PersonalisedDashboardComponent
+],
   imports: [
     CommonModule,
     FormsModule,
     AutocompleteLibModule,
     RichTextEditorAllModule,
-    PersonalisedDashboardComponent,
-    IssueDescriptionComponent,
-    PersonalizedViewComponent,
     FontAwesomeModule,
     MomentumTableModule,
+    NgxUiLoaderModule
   ]
 })
 export class IssueTrackerDashboardModule { }

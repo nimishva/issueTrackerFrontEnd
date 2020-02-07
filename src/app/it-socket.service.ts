@@ -7,7 +7,8 @@ import { HttpErrorResponse } from '@angular/common/http';
 })
 export class ItSocketService {
 
-  private url = "http://localhost:3000";
+  //private url = "http://localhost:3000";
+  private url = "http://api.resfeber.online"
   private socket;
 
   constructor() { 
@@ -27,6 +28,14 @@ export class ItSocketService {
     public getOwnUserId = (userId)=> {
       return Observable.create((observer)=>{
         this.socket.on(userId,data=>{
+          observer.next(data);
+        })
+      })
+    }
+
+    public tokenValidity = ()=>{
+      return Observable.create((observer)=>{
+        this.socket.on('token-error',data=>{
           observer.next(data);
         })
       })

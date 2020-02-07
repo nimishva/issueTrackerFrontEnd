@@ -28,15 +28,14 @@ import { RichTextEditorAllModule } from '@syncfusion/ej2-angular-richtexteditor'
 
 //Momentum Table Module
 import { MomentumTableModule } from 'momentum-table';
-import { PersonalizedViewComponent } from './issue-tracker-dashboard/personalized-view/personalized-view.component';
+import { IssueTrackerDashboardModule} from './issue-tracker-dashboard/issue-tracker-dashboard.module';
+import { NgxUiLoaderModule } from 'ngx-ui-loader';
+
 
 
 @NgModule({
   declarations: [
     AppComponent,
-    IssueDescriptionComponent,
-    PersonalisedDashboardComponent,
-    PersonalizedViewComponent,
   ],
   imports: [
     CommonModule,
@@ -44,12 +43,14 @@ import { PersonalizedViewComponent } from './issue-tracker-dashboard/personalize
     BrowserModule,
     AppRoutingModule,
     UserDashboardModule,
+    IssueTrackerDashboardModule,
     HttpClientModule,
     FontAwesomeModule,
     FormsModule,
     AutocompleteLibModule,
     RichTextEditorAllModule,
     MomentumTableModule,
+    NgxUiLoaderModule,
     ToastrModule.forRoot(),
     RouterModule.forRoot([
       {path:'login',component:LoginComponent,pathMatch:'full'},
