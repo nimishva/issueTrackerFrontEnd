@@ -33,6 +33,7 @@ export class MainService {
 
 
     public getIssueData:any = (issueId)=>{
+      console.log("Getting Issue data"+issueId);
       return this.http.post(this.apiUrl+"issueTracker/getIssueData",issueId);
     }
 
@@ -41,6 +42,7 @@ export class MainService {
     }
 
     public getAllIssueData:any=()=>{
+      console.log("Getting Issue Data");
       return this.http.get(this.apiUrl+"issueTracker/getAllIssuedata")
     }
 

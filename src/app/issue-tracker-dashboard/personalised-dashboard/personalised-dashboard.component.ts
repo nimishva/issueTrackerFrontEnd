@@ -53,7 +53,7 @@ export class PersonalisedDashboardComponent implements OnInit {
      this.getUserData()
      this.listenToOwnUserId();
      this.getAllData();
-     this.getAllIssueData();
+    // this.getAllIssueData();
      
      
   
@@ -71,7 +71,6 @@ export class PersonalisedDashboardComponent implements OnInit {
 
   setUserOnline(){
     let authToken = Cookie.get('authtoken');
-    //console.log(authToken);
     this.socketService.setUserOnline(authToken);
   } //Setting user online
 
@@ -80,6 +79,8 @@ export class PersonalisedDashboardComponent implements OnInit {
     .subscribe((data)=>{
       if(data.status === 403){
         this.toaster.error(data.message);
+        Cookie.deleteAll();
+        localStorage.clear();
         setTimeout(() => {
           this.router.navigate(['/login']);
         }, 1000);
@@ -92,10 +93,10 @@ export class PersonalisedDashboardComponent implements OnInit {
 
     this.socketService.getOwnUserId(this.loggedUserData.userId)
     .subscribe((response)=>{
-      //console.log(response.data.updatedDataType);
       this.getAllData();
+      console.log("Listening to own Id");
       this.showToaster(response.data.issueId,response); 
-      this.getAllIssueData();
+     // this.getAllIssueData();
     })
   }
 
@@ -118,6 +119,7 @@ export class PersonalisedDashboardComponent implements OnInit {
     this.loader.start();
     this.loading = true;
     let tableArray = [];
+    this.issueArrayClone = [];
     let i = 1;
     this.http.getAllIssueData()
     .subscribe((apiResponse)=>{
@@ -141,6 +143,8 @@ export class PersonalisedDashboardComponent implements OnInit {
      
         
         i++;
+        this.issueArrayClone.push(data.title);
+
       }
     // });
     this.newIssueData = tableArray;

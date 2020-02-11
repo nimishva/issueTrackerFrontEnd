@@ -24,6 +24,8 @@ export class IssueDescriptionComponent implements OnInit {
   @Input() newIssueData:any;
   @Output() closeWindow = new EventEmitter<string>();
   //Form Variables
+  public alreadyInWatcherList:boolean = false;
+  reportedBy:string;
   issueTitle:string;
   status:string = "Pending";
   reportedDate : any = new Date();
@@ -84,10 +86,7 @@ export class IssueDescriptionComponent implements OnInit {
       this.watcher        = [];
       this.reportedDate   = new Date();  
       this.viewMode = "input"
-    }else{
-      this.loadIssueDescription(change.emittedIssueId.currentValue);
-      
-    }
+    } 
 
   }
 
@@ -150,11 +149,25 @@ export class IssueDescriptionComponent implements OnInit {
       this.comments       = apiResponse.data[0].comments;
       this.watcher        = apiResponse.data[0].watcher;
       this.reportedDate   = new Date(apiResponse.data[0].reportedDate);  
+      this.reportedBy     = apiResponse.data[0].reportedBy;
       this.issueAssignee  = this.http.getNameOfUser(this.allUsers,apiResponse.data[0].assignee);
-  
+
+      apiResponse.data[0].watcher.forEach(watcher => {
+         // console.log("reported By "+this.reportedBy);
+          if(watcher == this.loggedUserData.userId){
+            this.alreadyInWatcherList = true;
+          }else if(this.reportedBy == this.loggedUserData.userId){
+            this.alreadyInWatcherList = true;
+          }
+      });
+
+      if(apiResponse.data[0].assignee == this.loggedUserData.userId){
+        this.alreadyInWatcherList = true;
+      }
+      this.reportedBy = this.http.getNameOfUser(this.allUsers,this.reportedBy);
     })
     
-
+   
    
   this.loader.stop();
    // console.log(this.issueAssignee);

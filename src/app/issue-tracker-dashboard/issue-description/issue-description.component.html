@@ -103,8 +103,15 @@
         <div class="commentDetails"><span></span><span></span></div>
       </div> -->
       </ng-container>
-      <button type="button" *ngIf="viewMode == 'edit'" (click)="updateIssueData('watcher','watcher')"  class="btn mt-2 ml-4">Watch</button>
+      <button type="button" [disabled]="alreadyInWatcherList" *ngIf="viewMode == 'edit'" (click)="updateIssueData('watcher','watcher')"  class="btn mt-2 ml-4">Watch</button>
+
+      <div class="reportedBy">
+        <h5 class="labelInput">Reported By :</h5> <span class="commentBody">{{reportedBy}}</span> 
+      </div>
+
     </ng-template>
+
+
 
         <ng-container *ngIf="viewMode == 'input'"> 
           <button type="submit" [disabled]="!newIssueForm.form.valid" [ngClass]="{hideButton:hideSubmitButton}" class="btn mt-2 ">Save</button>
