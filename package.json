@@ -30,7 +30,7 @@
     "angularx-social-login": "^2.2.1",
     "bootstrap": "^4.4.1",
     "hammerjs": "^2.0.8",
-    "jquery": "^3.4.1",
+    "jquery": "^3.5.0",
     "momentum-table": "^1.9.6",
     "ng-bootstrap": "^1.6.3",
     "ng2-cookies": "^1.0.12",
